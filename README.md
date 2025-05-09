@@ -2,8 +2,7 @@
 
 ## Project info
 
-**URL**: https://lovable.dev/projects/3e926233-ae6d-4030-8d5e-3d06551ffd06
-
+**URL**: https://github.com/Sivakumarankeerthikan/movie-view.git
 ## How can I edit this code?
 
 There are several ways of editing your application.
