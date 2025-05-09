@@ -1,4 +1,4 @@
-# Welcome to your Lovable project
+# Welcome to my movie view project
 
 ## Project info
 
@@ -8,9 +8,6 @@
 
 There are several ways of editing your application.
 
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/3e926233-ae6d-4030-8d5e-3d06551ffd06) and start prompting.
 
 Changes made via Lovable will be committed automatically to this repo.
 
@@ -60,9 +57,6 @@ This project is built with:
 - shadcn-ui
 - Tailwind CSS
 
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/3e926233-ae6d-4030-8d5e-3d06551ffd06) and click on Share -> Publish.
 
 ## Can I connect a custom domain to my Lovable project?
 
