@@ -1,4 +1,3 @@
-
 import { Link } from "react-router-dom";
 import { getPosterUrl, formatDate } from "@/hooks/useMovieData";
 import { useMovieContext } from "@/context/MovieContext";
@@ -15,6 +14,7 @@ interface MovieCardProps {
     release_date: string;
     vote_average: number;
     overview: string;
+    backdrop_path?: string | null;
   };
   view?: "grid" | "list";
 }
@@ -38,7 +38,10 @@ export const MovieCard = ({ movie, view = "grid" }: MovieCardProps) => {
         description: `${movie.title} has been removed from your favorites.`,
       });
     } else {
-      addToFavorites(movie);
+      addToFavorites({
+        ...movie,
+        backdrop_path: movie.backdrop_path || null,
+      });
       toast({
         title: "Added to favorites",
         description: `${movie.title} has been added to your favorites.`,

@@ -1,4 +1,3 @@
-
 import { useQuery } from "@tanstack/react-query";
 
 // API config
@@ -105,7 +104,7 @@ export const useSearchMovies = (query: string, page = 1) => {
     queryKey: ["searchMovies", query, page],
     queryFn: () => fetchSearchMovies(query, page),
     enabled: !!query,
-    keepPreviousData: true,
+    placeholderData: (previousData) => previousData,
   });
 };
 
