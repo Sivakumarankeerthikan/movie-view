@@ -62,7 +62,8 @@ const fetchTrendingMovies = async () => {
   if (!response.ok) {
     throw new Error("Failed to fetch trending movies");
   }
-  return response.json() as Promise<TrendingMoviesResponse>;
+  const data = await response.json() as TrendingMoviesResponse;
+  return data;
 };
 
 const fetchSearchMovies = async (query: string, page = 1) => {
@@ -76,11 +77,12 @@ const fetchSearchMovies = async (query: string, page = 1) => {
     throw new Error("Failed to search movies");
   }
   
-  return response.json() as Promise<SearchMoviesResponse>;
+  const data = await response.json() as SearchMoviesResponse;
+  return data;
 };
 
 const fetchMovieDetails = async (movieId: string) => {
-  const response = await fetch(`${BASE_URL}/movie/${movieId}?api_key=${API_KEY}&append_to_response=videos,credits`);
+  const response = await fetch(`${BASE_URL}/movie/${movieId}?api_key=${API_KEY}&append_to_response=videos,credits,recommendations`);
   
   if (!response.ok) {
     throw new Error("Failed to fetch movie details");
@@ -94,6 +96,7 @@ export const useTrendingMovies = () => {
   return useQuery({
     queryKey: ["trendingMovies"],
     queryFn: fetchTrendingMovies,
+    staleTime: 1000 * 60 * 5, // 5 minutes
   });
 };
 
@@ -102,6 +105,7 @@ export const useSearchMovies = (query: string, page = 1) => {
     queryKey: ["searchMovies", query, page],
     queryFn: () => fetchSearchMovies(query, page),
     enabled: !!query,
+    keepPreviousData: true,
   });
 };
 
@@ -110,5 +114,6 @@ export const useMovieDetails = (movieId: string | undefined) => {
     queryKey: ["movieDetails", movieId],
     queryFn: () => fetchMovieDetails(movieId as string),
     enabled: !!movieId,
+    staleTime: 1000 * 60 * 10, // 10 minutes
   });
 };

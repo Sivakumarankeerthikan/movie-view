@@ -6,8 +6,9 @@ import Navbar from "@/components/Navbar";
 import MovieCard from "@/components/MovieCard";
 import { Button } from "@/components/ui/button";
 import { useMovieContext } from "@/context/MovieContext";
-import { Grid2X2, List } from "lucide-react";
+import { Grid2X2, List, FilterX } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
+import GenreFilter from "@/components/GenreFilter";
 
 const Search = () => {
   const [searchParams] = useSearchParams();
@@ -15,11 +16,26 @@ const Search = () => {
   const [page, setPage] = useState(1);
   const { data, isLoading, error } = useSearchMovies(query, page);
   const { viewMode, toggleViewMode } = useMovieContext();
+  const [selectedGenre, setSelectedGenre] = useState<number | null>(null);
+  const [filteredResults, setFilteredResults] = useState<any[]>([]);
   
   // Reset page when query changes
   useEffect(() => {
     setPage(1);
+    setSelectedGenre(null);
   }, [query]);
+  
+  useEffect(() => {
+    if (data?.results) {
+      if (selectedGenre === null) {
+        setFilteredResults(data.results);
+      } else {
+        setFilteredResults(
+          data.results.filter(movie => movie.genre_ids?.includes(selectedGenre))
+        );
+      }
+    }
+  }, [data?.results, selectedGenre]);
 
   const handleLoadMore = () => {
     if (data && page < data.total_pages) {
@@ -36,13 +52,21 @@ const Search = () => {
           {query ? `Search results for "${query}"` : "Search Movies"}
         </h1>
         
-        <p className="text-muted-foreground mb-8">
+        <p className="text-muted-foreground mb-4">
           {data?.total_results
             ? `Found ${data.total_results} results`
             : isLoading
             ? "Searching..."
             : "Enter a search term to find movies"}
         </p>
+        
+        {query && (
+          <GenreFilter
+            selectedGenre={selectedGenre}
+            onGenreSelect={setSelectedGenre}
+            className="mb-8"
+          />
+        )}
         
         {error && (
           <div className="rounded-lg border border-destructive bg-destructive/10 p-8 text-center mb-8">
@@ -51,9 +75,29 @@ const Search = () => {
           </div>
         )}
         
+        {selectedGenre !== null && (
+          <div className="flex items-center justify-between mb-6">
+            <p className="text-muted-foreground">
+              {filteredResults?.length 
+                ? `Showing ${filteredResults.length} filtered results` 
+                : "No results match your filter"
+              }
+            </p>
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => setSelectedGenre(null)}
+              className="flex gap-2 items-center"
+            >
+              <FilterX className="h-4 w-4" />
+              Clear Filter
+            </Button>
+          </div>
+        )}
+        
         <div className="flex items-center justify-between mb-6">
           <p className="text-muted-foreground">
-            {data?.results?.length ? `Showing ${data.results.length} of ${data.total_results} movies` : ""}
+            {data?.results?.length ? `Showing ${filteredResults.length} of ${data.total_results} movies` : ""}
           </p>
           {data?.results?.length > 0 && (
             <Button
@@ -92,11 +136,11 @@ const Search = () => {
           </div>
         )}
         
-        {!isLoading && data?.results?.length === 0 && query && (
+        {!isLoading && filteredResults?.length === 0 && query && (
           <div className="rounded-lg border p-8 text-center">
             <h3 className="mb-2 text-xl font-semibold">No movies found</h3>
             <p className="text-muted-foreground mb-4">
-              We couldn't find any movies matching "{query}". Try a different search term.
+              We couldn't find any movies matching your criteria. Try a different search term or filter.
             </p>
             <Link to="/">
               <Button>Return to Home</Button>
@@ -104,15 +148,15 @@ const Search = () => {
           </div>
         )}
         
-        {!isLoading && data?.results?.length > 0 && (
+        {!isLoading && filteredResults?.length > 0 && (
           <>
             <div className={viewMode === "grid" ? "movie-grid" : "movie-list gap-4"}>
-              {data.results.map((movie) => (
+              {filteredResults.map((movie) => (
                 <MovieCard key={movie.id} movie={movie} view={viewMode} />
               ))}
             </div>
             
-            {data.page < data.total_pages && (
+            {selectedGenre === null && data?.page < data?.total_pages && (
               <div className="mt-12 text-center">
                 <Button 
                   onClick={handleLoadMore} 
