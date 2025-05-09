@@ -1,15 +1,16 @@
 
-import { Link } from "react-router-dom";
-import { Film, Search, Moon, Sun, User } from "lucide-react";
+import { Link, useNavigate } from "react-router-dom";
+import { Film, Search, Moon, Sun, User, LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useTheme } from "@/context/ThemeContext";
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
 import { useMovieContext } from "@/context/MovieContext";
+import { useAuth } from "@/context/AuthContext";
 
 export const Navbar = () => {
   const { isDarkMode, toggleTheme } = useTheme();
   const { lastSearchQuery, setLastSearchQuery } = useMovieContext();
+  const { user, logout, isAuthenticated } = useAuth();
   const [searchInput, setSearchInput] = useState(lastSearchQuery);
   const navigate = useNavigate();
 
@@ -19,6 +20,11 @@ export const Navbar = () => {
       setLastSearchQuery(searchInput.trim());
       navigate(`/search?q=${encodeURIComponent(searchInput.trim())}`);
     }
+  };
+
+  const handleLogout = () => {
+    logout();
+    navigate('/');
   };
 
   return (
@@ -60,9 +66,22 @@ export const Navbar = () => {
             <Button variant="outline">Favorites</Button>
           </Link>
           
-          <Button className="hidden sm:flex">
-            <User className="h-4 w-4 mr-2" /> Login
-          </Button>
+          {isAuthenticated ? (
+            <div className="flex items-center gap-2">
+              <span className="hidden md:block text-sm font-medium">
+                {user?.name}
+              </span>
+              <Button onClick={handleLogout} variant="outline" size="sm">
+                <LogOut className="h-4 w-4 mr-2" /> Logout
+              </Button>
+            </div>
+          ) : (
+            <Link to="/login">
+              <Button>
+                <User className="h-4 w-4 mr-2" /> Login
+              </Button>
+            </Link>
+          )}
         </div>
       </div>
     </header>
